@@ -1,4 +1,9 @@
+# 过滤生成的二进制程序
 benchmark_test
 stress_test_*
 day*
 test*
+# 过滤常见编译临时文件
+*.o
+*.out
+build/
