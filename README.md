@@ -100,7 +100,7 @@ Caller           MemoryPool                FreeList
 ### 4.1 测试环境
 
   - **CPU**:            Intel(R) Core(TM) i5-9300H CPU @ 2.40GHz
-  - **OS**:             Ubuntu 22.04.5 LTS x86_64**
+  - **OS**:             Ubuntu 22.04.5 LTS x86_64
   - **Compiler**:       g++ (Ubuntu 12.3.0-1ubuntu1~22.04.3) 12.3.0
   - **Benchmark 工具**: Google Benchmark v1.8.3
   - **测试对象**:  24 字节小数据包对象（连续分配与释放 10,000 次 与 100,000次）
@@ -131,11 +131,11 @@ Our MemoryPool  : [=================] 194.9 M/s (↑ 3.25x)
 
 ### 4.4 深度技术剖析：规模扩大 10 倍后吞吐量梯度的根因分析
 
-在基准测试中，当操作规模从 $10^4$ 放大到 $10^5$ 时，系统 `malloc` 吞吐量仅微降约 9.4%（$66.1\text{ M/s} \to 59.9\text{ M/s}$），而 `MemoryPool` 的吞吐量从 $340.6\text{ M/s}$ 降至 $194.9\text{ M/s}$。这种现象揭示了现代计算机体系结构在不同工作集（Working Set）下的底层行为：
+在基准测试中，当操作规模从 10,000 放大到 100,000 时，系统 `malloc` 吞吐量仅微降约 9.4%（**66.1 M/s → 59.9 M/s**），而 `MemoryPool` 的吞吐量从 **340.6 M/s** 降至 **194.9 M/s**。这种现象揭示了现代计算机体系结构在不同工作集（Working Set）下的底层行为：
 
 #### 1. 突破 CPU L1 / L2 高速缓存容量界限 (Cache Hierarchy Boundary)
 - **$10,000$ 次操作**：单个槽位若占 $32 \sim 64\text{ B}$，工作集总内存仅为 $320\text{ KB} \sim 640\text{ KB}$。现代 CPU 单核独占的 L2 Cache 通常在 $1.25\text{ MB} \sim 2\text{ MB}$。**该规模下的所有对象完全驻留在超高速 L2 甚至是 L1 缓存中**，内存读写延迟仅需 $1 \sim 3\text{ ns}$，使内存池跑出了 $340\text{ M/s}$ 的理论极限吞吐。
-- **$100,000$ 次操作**：数据规模扩大 10 倍后，总工作集暴增至 $3.2\text{ MB} \sim 6.4\text{ MB}$。这彻底击穿了 CPU 单核 L2 缓存容量，冷数据被踢出至访问周期更长（$10 \sim 15\text{ ns}$）的共享 L3 Cache，甚至回退到主存 DRAM（$50 \sim 80\text{ ns}$ 延迟），因此单次操作平均耗时自然上升至 $5.1\text{ ns}$。
+- **$100,000$ 次操作**：数据规模扩大 10 倍后，总工作集暴增至 $3.2\text{ MB} \sim 6.4\text{ MB}$。这彻底击穿了 CPU 单核 L2 缓存容量，冷数据被踢出至访问周期更长（ $10 \sim 15\text{ ns}$ ）的共享 L3 Cache，甚至回退到主存 DRAM（$50 \sim 80\text{ ns}$ 延迟），因此单次操作平均耗时自然上升至 $5.1\text{ ns}$。
 
 #### 2. 次要缺页异常 (Minor Page Fault) 与 TLB 缺失惩罚
 - 连续申请 100,000 个对象需要向 OS 申请数十个 64KB 的物理内存块（`MemoryBlock`）。
