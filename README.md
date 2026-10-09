@@ -103,7 +103,8 @@ Caller           MemoryPool                FreeList
   - **OS**:             Ubuntu 22.04.5 LTS x86_64**
   - **Compiler**:       g++ (Ubuntu 12.3.0-1ubuntu1~22.04.3) 12.3.0
   - **Benchmark 工具**: Google Benchmark v1.8.3
-  - **Benchmark 工具**: 测试对象: 24 字节小数据包对象（连续分配与释放 10,000 次 与 100,000次）
+  - **测试对象**:  24 字节小数据包对象（连续分配与释放 10,000 次 与 100,000次）
+  - **测试指令**: g++ -O3 -std=c++14 benchmark_test.cpp -lbenchmark -lpthread -o benchmark_test && ./benchmark_test
 
 ### 4.2 量化数据对照表
 
