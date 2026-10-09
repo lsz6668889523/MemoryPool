@@ -3,6 +3,7 @@ benchmark_test
 stress_test_*
 day*
 test*
+stress_test
 # 过滤常见编译临时文件
 *.o
 *.out
