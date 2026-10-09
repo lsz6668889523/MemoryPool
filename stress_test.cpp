@@ -17,7 +17,7 @@ void testMassiveAllocation()
 {
     std::cout<<"[Test 1] 运行多 Block 连续扩容与池析构兜底测试...\n";
     {
-        //BlockSize 设为1024字节，每个Slot占56字节，迫使内存池频繁向OS 申请新的Block
+        //BlockSize 设为1024字节，每个Slot占56字节，迫使内存池频繁向OS 申请新的Block.
         MemoryPool<TestNode,1024> pool;
         std::vector<TestNode*>nodes;
 
